@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RecText</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">RecText</h1>
+    <p class="instruction">Upload an image to extract text</p>
+
+    <div class="upper">
+      <input type="file" id="fileInput">
+      <button id="startBtn">Start</button>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="bottom" id="outputContainer">
+      <div class="c1">
+        <img id="preview" src="" alt="Preview">
+      </div>
+      <div class="c2">
+        <textarea id="textOutput" placeholder="Text will appear here..."></textarea>
+      </div>
+    </div>
+
+    <div class="download-btn" id="downloadSection">
+      <button onclick="downloadText()">Download Text File</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
