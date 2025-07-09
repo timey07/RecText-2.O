@@ -29,8 +29,12 @@ startBtn.onclick = () => {
 
 fetch('http://13.71.117.59:5000/extract', {
   method: 'POST',
-  body: formData
+  body: formData,
+  headers: {
+    'Accept': 'application/json'
+  }
 })
+
 
     .then(res => res.json())
     .then(data => {
