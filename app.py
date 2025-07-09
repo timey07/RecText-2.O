@@ -19,7 +19,7 @@ def extract_text():
     image_bytes = image_file.read()
     image = Image.open(io.BytesIO(image_bytes))
 
-    image_np = np.array(image)  # ✅ fix here
+    image_np = np.array(image) 
     results = reader.readtext(image_np)
 
     extracted = '\n'.join([text for _, text, _ in results])
