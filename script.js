@@ -27,10 +27,11 @@ startBtn.onclick = () => {
 
   progress.textContent = 'Processing...';
 
-  fetch('http://localhost:5000/extract', {
-    method: 'POST',
-    body: formData
-  })
+fetch('http://13.71.117.59:5000/extract', {
+  method: 'POST',
+  body: formData
+})
+
     .then(res => res.json())
     .then(data => {
       if (data.text && data.text.trim().length > 0) {
