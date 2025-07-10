@@ -102,7 +102,7 @@ st.markdown('<div class="subtitle">Extract text from images using AI-powered OCR
 uploaded_file = st.file_uploader("", type=["png", "jpg", "jpeg", "webp"])
 
 if uploaded_file:
-    if uploaded_file.size > 5 * 1024 * 1024:
+    if uploaded_file.size > 200 * 1024 * 1024:
         st.error("File too large. Please upload an image under 5MB.")
     else:
         image = Image.open(uploaded_file)
