@@ -1,33 +1,34 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+import streamlit as st
 import easyocr
 from PIL import Image
 import numpy as np
-import io
 
-app = Flask(__name__)
-CORS(app)
+st.set_page_config(page_title="RecText 2.O", layout="centered")
+st.title("🧠 RecText 3.O")
+st.markdown("### Upload an image to extract text using AI (EasyOCR)")
 
-reader = easyocr.Reader(['en'])
+uploaded_file = st.file_uploader("Choose an image", type=["png", "jpg", "jpeg"])
 
-@app.route('/extract', methods=['POST'])
-def extract_text():
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image uploaded'}), 400
+if uploaded_file:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="📷 Uploaded Image", use_column_width=True)
 
-    image_file = request.files['image']
-    image_bytes = image_file.read()
-    image = Image.open(io.BytesIO(image_bytes))
+    with st.spinner("🔍 Extracting text..."):
+        reader = easyocr.Reader(['en'])
+        image_np = np.array(image)
+        results = reader.readtext(image_np)
+        extracted_text = '\n'.join([text for _, text, _ in results])
 
-    image_np = np.array(image) 
-    results = reader.readtext(image_np)
+    st.divider()
 
-    extracted = '\n'.join([text for _, text, _ in results])
-    return jsonify({'text': extracted})
-
-import os
-
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
-
+    if extracted_text.strip():
+        st.success("✅ Text successfully extracted!")
+        st.text_area("📝 Extracted Text", extracted_text, height=250)
+        st.download_button(
+            "📥 Download as Text File",
+            extracted_text,
+            file_name="extracted_text.txt",
+            mime="text/plain"
+        )
+    else:
+        st.error("❌ No readable text detected. Try a clearer image.")
