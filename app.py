@@ -99,7 +99,7 @@ st.markdown('<div class="main-container">', unsafe_allow_html=True)
 st.markdown('<div class="title">RecText-3.O</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Extract text from images using AI-powered OCR</div>', unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("Note: Currently Maximum allowed size is 5MB.", type=["png", "jpg", "jpeg", "webp"])
+uploaded_file = st.file_uploader("Note: Currently maximum allowed size is 5MB.", type=["png", "jpg", "jpeg", "webp"])
 
 if uploaded_file:
     if uploaded_file.size > 5 * 1024 * 1024:
