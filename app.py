@@ -4,7 +4,7 @@ from PIL import Image
 import numpy as np
 
 st.set_page_config(
-    page_title="OCR Text Extractor",
+    page_title="RecText-3.O",
     page_icon="📄",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -91,56 +91,43 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
-st.markdown('<div class="title">OCR Text Extractor</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Extract text from images using AI-powered OCR</div>', unsafe_allow_html=True)
+st.markdown('<div class="title">RecText-3.O</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Extract text from images using AI-powered OCR (Max file size: 5MB)</div>', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg", "webp"])
 
 if uploaded_file:
-    try:
+    if uploaded_file.size > 5 * 1024 * 1024:
+        st.error("File too large. Please upload an image under 5MB.")
+    else:
         image = Image.open(uploaded_file)
         st.session_state.uploaded_image = image
 
-        if st.button("🔍 Extract Text"):
-            with st.spinner("Analyzing image..."):
-                reader = easyocr.Reader(["en"], gpu=False)
-                results = reader.readtext(np.array(image))
-                extracted_text = "\n".join([t for (_, t, conf) in results if conf > 0.5])
-                st.session_state.text = extracted_text
-                st.session_state.results = results
+        st.markdown('<div class="content-area">', unsafe_allow_html=True)
+        col1, col2 = st.columns([1, 1])
 
-        if 'text' in st.session_state:
-            st.success("Text extracted successfully!")
-            st.markdown('<div class="content-area">', unsafe_allow_html=True)
-
-            with st.container():
-                col1, col2 = st.columns([1, 1])
-
-                with col1:
-                    st.markdown('<div class="image-box">', unsafe_allow_html=True)
-                    st.image(st.session_state.uploaded_image)
-                    st.markdown('</div>', unsafe_allow_html=True)
-
-                with col2:
-                    st.markdown('<div class="text-box">', unsafe_allow_html=True)
-                    st.text_area("Extracted Text", st.session_state.text, height=400)
-                    st.download_button("Download as Text File", st.session_state.text, file_name="extracted_text.txt")
-                    st.markdown('</div>', unsafe_allow_html=True)
-
+        with col1:
+            st.markdown('<div class="image-box">', unsafe_allow_html=True)
+            st.image(image)
             st.markdown('</div>', unsafe_allow_html=True)
 
-    except Exception as e:
-        st.error(f"Error: {str(e)}")
+        with col2:
+            if st.button("🔍 Extract Text"):
+                with st.spinner("Analyzing image..."):
+                    reader = easyocr.Reader(["en"], gpu=False)
+                    results = reader.readtext(np.array(image))
+                    extracted_text = "\n".join([t for (_, t, conf) in results if conf > 0.5])
+                    st.session_state.text = extracted_text
+                    st.session_state.results = results
 
+            if 'text' in st.session_state:
+                st.markdown('<div class="text-box">', unsafe_allow_html=True)
+                st.text_area("Extracted Text", st.session_state.text, height=400)
+                st.download_button("Download as Text File", st.session_state.text, file_name="extracted_text.txt")
+                st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
 else:
     st.info("Please upload an image to get started.")
 
 st.markdown('</div>', unsafe_allow_html=True)
-
-
-
-
-
-
-
-
