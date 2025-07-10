@@ -2,9 +2,6 @@ import streamlit as st
 import easyocr
 from PIL import Image
 import numpy as np
-import streamlit.components.v1 as components
-import base64
-import io
 
 st.set_page_config(
     page_title="RecText-3.O",
@@ -86,6 +83,11 @@ st.markdown("""
         width: 100%;
         margin-top: 1rem;
     }
+    
+section[data-testid="stFileUploader"] > div > div > div > span {
+    display: none !important;
+}
+
 
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
@@ -95,96 +97,42 @@ st.markdown("""
 
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 st.markdown('<div class="title">RecText-3.O</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Extract text from images using AI-powered OCR (Upload or Paste)</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Extract text from images using AI-powered OCR</div>', unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("Note: Max file size 5MB", type=["png", "jpg", "jpeg", "webp"])
-
-# --- JS to support clipboard paste ---
-components.html("""
-<script>
-document.addEventListener("paste", async (event) => {
-    const items = (event.clipboardData || window.clipboardData).items;
-    for (const item of items) {
-        if (item.type.indexOf("image") !== -1) {
-            const file = item.getAsFile();
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const base64Image = event.target.result;
-                const img = new Image();
-                img.src = base64Image;
-                img.onload = function() {
-                    const canvas = document.createElement("canvas");
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext("2d");
-                    ctx.drawImage(img, 0, 0);
-                    const newBase64 = canvas.toDataURL("image/png");
-                    const data = newBase64.split(",")[1];
-                    fetch("/paste_image", {
-                        method: "POST",
-                        headers: {"Content-Type": "application/json"},
-                        body: JSON.stringify({ data: data })
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                };
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-});
-</script>
-""", height=0)
-
-if not hasattr(st.session_state, 'image_data'):
-    st.session_state.image_data = None
-
-# Receive pasted image if available
-if "paste_image" in st.experimental_get_query_params():
-    pasted_data = st.experimental_get_query_params()["paste_image"][0]
-    try:
-        image_bytes = base64.b64decode(pasted_data)
-        st.session_state.image_data = Image.open(io.BytesIO(image_bytes))
-    except:
-        st.warning("Failed to decode pasted image")
+uploaded_file = st.file_uploader("Note: Currently maximum allowed size is 5MB.", type=["png", "jpg", "jpeg", "webp"])
 
 if uploaded_file:
     if uploaded_file.size > 5 * 1024 * 1024:
         st.error("File too large. Please upload an image under 5MB.")
     else:
         image = Image.open(uploaded_file)
-        st.session_state.image_data = image
+        st.session_state.uploaded_image = image
 
-if st.session_state.image_data:
-    image = st.session_state.image_data
+        st.markdown('<div class="content-area">', unsafe_allow_html=True)
+        col1, col2 = st.columns([1, 1])
 
-    st.markdown('<div class="content-area">', unsafe_allow_html=True)
-    col1, col2 = st.columns([1, 1])
-
-    with col1:
-        st.markdown('<div class="image-box">', unsafe_allow_html=True)
-        st.image(image)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with col2:
-        if st.button("🔍 Extract Text"):
-            with st.spinner("Analyzing image..."):
-                reader = easyocr.Reader(["en"], gpu=False)
-                results = reader.readtext(np.array(image))
-                extracted_text = "\n".join([t for (_, t, conf) in results if conf > 0.5])
-                st.session_state.text = extracted_text
-                st.session_state.results = results
-
-        if 'text' in st.session_state:
-            st.markdown('<div class="text-box">', unsafe_allow_html=True)
-            st.text_area("Extracted Text", st.session_state.text, height=400)
-            st.download_button("Download as Text File", st.session_state.text, file_name="extracted_text.txt")
+        with col1:
+            st.markdown('<div class="image-box">', unsafe_allow_html=True)
+            st.image(image)
             st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        with col2:
+            if st.button("🔍 Extract Text"):
+                with st.spinner("Analyzing image..."):
+                    reader = easyocr.Reader(["en"], gpu=False)
+                    results = reader.readtext(np.array(image))
+                    extracted_text = "\n".join([t for (_, t, conf) in results if conf > 0.5])
+                    st.session_state.text = extracted_text
+                    st.session_state.results = results
 
+            if 'text' in st.session_state:
+                st.markdown('<div class="text-box">', unsafe_allow_html=True)
+                st.text_area("Extracted Text", st.session_state.text, height=400)
+                st.download_button("Download as Text File", st.session_state.text, file_name="extracted_text.txt")
+                st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
 else:
-    st.info("Upload or paste an image to get started.")
+    st.info("Please upload an image to get started.")
 
 st.markdown('</div>', unsafe_allow_html=True)
-
