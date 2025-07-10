@@ -5,64 +5,67 @@ import numpy as np
 
 st.set_page_config(page_title="RecText 3.O", layout="centered")
 
-# Custom CSS for layout, font, and animated background
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif;
+        background: linear-gradient(to right, #cce5ff, #e6f2ff);
         margin: 0 !important;
         padding: 0 !important;
-        background: url('https://www.transparenttextures.com/patterns/white-wall-3.png'), 
-                    linear-gradient(to right, #e0eafc, #cfdef3);
-        background-size: cover;
-        background-repeat: repeat;
     }
 
     .main-container {
         max-width: 850px;
-        margin: 30px auto 0 auto;
-        padding: 30px 30px 20px 30px;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
-        box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+        margin: 40px auto;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
     }
 
     .title {
-        font-size: 2.2rem;
+        font-size: 2.4rem;
         text-align: center;
-        margin-bottom: 5px;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
     }
 
     .subtitle {
         text-align: center;
-        color: #666;
         font-size: 1rem;
-        margin-bottom: 1.5rem;
+        color: #475569;
+        margin-bottom: 2rem;
     }
 
     .stDownloadButton > button {
-        background-color: #10b981;
+        background-color: #0ea5e9;
         color: white;
-        font-weight: bold;
+        font-weight: 600;
         border: none;
         border-radius: 6px;
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1.2rem;
         margin-top: 10px;
+        transition: 0.3s ease;
     }
 
     .stDownloadButton > button:hover {
-        background-color: #059669;
+        background-color: #0284c7;
     }
 
+    /* Hide iframe (Streamlit watermark or other) */
     .element-container:has(iframe) {
         display: none !important;
+    }
+
+    /* Fix body spacing (white bar) */
+    .block-container {
+        padding-top: 1rem !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Main container
 with st.container():
     st.markdown('<div class="main-container">', unsafe_allow_html=True)
     st.markdown('<div class="title">📄 RecText 3.O</div>', unsafe_allow_html=True)
@@ -83,7 +86,7 @@ with st.container():
         with col2:
             st.markdown("##### 📝 Text Output")
             with st.spinner("Extracting..."):
-                reader = easyocr.Reader(['en'])
+                reader = easyocr.Reader(['en'], gpu=False)
                 results = reader.readtext(image_np)
                 extracted_text = '\n'.join([text for _, text, _ in results])
 
