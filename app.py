@@ -2,6 +2,32 @@ import streamlit as st
 import easyocr
 from PIL import Image
 import numpy as np
+import streamlit.components.v1 as components
+
+# JavaScript for clipboard paste
+components.html("""
+<script>
+document.addEventListener('paste', async (event) => {
+    const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+    for (const item of items) {
+        if (item.type.indexOf("image") === 0) {
+            const blob = item.getAsFile();
+            const reader = new FileReader();
+            reader.onload = function(event){
+                const base64 = event.target.result;
+                fetch("/_stcore/upload_file", {
+                    method: "POST",
+                    body: new File([blob], "pasted_image.png", { type: "image/png" })
+                }).then(() => {
+                    window.location.reload();  // reload to show uploaded image
+                });
+            };
+            reader.readAsDataURL(blob);
+        }
+    }
+});
+</script>
+""", height=0)
 
 st.set_page_config(
     page_title="RecText-3.O",
