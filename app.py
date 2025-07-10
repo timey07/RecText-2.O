@@ -84,9 +84,10 @@ st.markdown("""
         margin-top: 1rem;
     }
     
-    .css-1aehpvj, .css-qrbaxs {
-    display: none;
-    }
+section[data-testid="stFileUploader"] > div > div > div > span {
+    display: none !important;
+}
+
 
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
