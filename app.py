@@ -92,7 +92,7 @@ st.markdown("""
 
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 st.markdown('<div class="title">RecText-3.O</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Extract text from images using AI-powered OCR (Max file size: 5MB)</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Extract text from images using AI-powered OCR</div>', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg", "webp"])
 
