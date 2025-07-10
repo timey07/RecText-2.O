@@ -9,18 +9,19 @@ st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-    html, body, [class*="css"] {
+    html, body, .appview-container .main, .block-container {
         font-family: 'Inter', sans-serif;
-        background: linear-gradient(to right, #cce5ff, #e6f2ff);
-        margin: 0 !important;
+        background: linear-gradient(to right, #cce5ff, #e6f2ff) !important;
+        color: #0f172a !important;
         padding: 0 !important;
+        margin: 0 !important;
     }
 
     .main-container {
         max-width: 850px;
         margin: 40px auto;
         padding: 30px;
-        background: rgba(255, 255, 255, 0.95);
+        background: rgba(255, 255, 255, 0.97);
         border-radius: 20px;
         box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
     }
@@ -29,7 +30,7 @@ st.markdown("""
         font-size: 2.4rem;
         text-align: center;
         color: #0f172a;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.3rem;
     }
 
     .subtitle {
@@ -54,18 +55,18 @@ st.markdown("""
         background-color: #0284c7;
     }
 
-    /* Hide iframe (Streamlit watermark or other) */
     .element-container:has(iframe) {
         display: none !important;
     }
 
-    /* Fix body spacing (white bar) */
+    /* Remove top padding that causes white bar */
     .block-container {
-        padding-top: 1rem !important;
+        padding-top: 0 !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
+# Main container
 with st.container():
     st.markdown('<div class="main-container">', unsafe_allow_html=True)
     st.markdown('<div class="title">📄 RecText 3.O</div>', unsafe_allow_html=True)
@@ -98,5 +99,6 @@ with st.container():
                 st.error("❌ No text detected. Please upload a clearer image.")
 
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 
