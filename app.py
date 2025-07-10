@@ -10,7 +10,7 @@ import base64
 st.set_page_config(
     page_title="OCR Text Extractor",
     page_icon="📄",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
@@ -26,7 +26,7 @@ st.markdown("""
     .main > div {
         background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
         min-height: 100vh;
-        padding: 2rem;
+        padding: 1rem;
     }
     
     .stApp {
@@ -37,20 +37,20 @@ st.markdown("""
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(10px);
         border-radius: 24px;
-        padding: 3rem;
+        padding: 2rem;
         border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        max-width: 800px;
+        max-width: 1200px;
         margin: 0 auto;
     }
     
     .hero-section {
         text-align: center;
-        margin-bottom: 3rem;
+        margin-bottom: 2rem;
     }
     
     .hero-title {
-        font-size: 3rem;
+        font-size: 2.5rem;
         font-weight: 700;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
@@ -59,48 +59,47 @@ st.markdown("""
     }
     
     .hero-subtitle {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         color: rgba(255, 255, 255, 0.7);
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
     
-    .upload-area {
+    .upload-section {
+        background: rgba(102, 126, 234, 0.1);
         border: 2px dashed rgba(102, 126, 234, 0.5);
         border-radius: 16px;
-        padding: 3rem;
+        padding: 2rem;
         text-align: center;
-        background: rgba(102, 126, 234, 0.1);
         margin-bottom: 2rem;
-        transition: all 0.3s ease;
     }
     
-    .upload-area:hover {
-        border-color: rgba(102, 126, 234, 0.8);
-        background: rgba(102, 126, 234, 0.15);
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
     }
     
-    .upload-text {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
-    }
-    
-    .upload-subtext {
-        color: rgba(255, 255, 255, 0.5);
-        font-size: 0.9rem;
-    }
-    
-    .result-section {
+    .image-section, .text-section {
         background: rgba(255, 255, 255, 0.05);
         border-radius: 16px;
-        padding: 2rem;
-        margin-top: 2rem;
+        padding: 1.5rem;
         border: 1px solid rgba(255, 255, 255, 0.1);
+        height: 500px;
+        overflow: hidden;
+    }
+    
+    .section-title {
+        color: #667eea;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        text-align: center;
     }
     
     .stats-container {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
         gap: 1rem;
         margin-top: 1.5rem;
     }
@@ -110,7 +109,6 @@ st.markdown("""
         padding: 1rem;
         border-radius: 12px;
         text-align: center;
-        flex: 1;
         border: 1px solid rgba(102, 126, 234, 0.3);
     }
     
@@ -133,6 +131,7 @@ st.markdown("""
         border-radius: 12px !important;
         color: white !important;
         font-family: 'Courier New', monospace !important;
+        height: 350px !important;
     }
     
     .stDownloadButton button {
@@ -146,43 +145,33 @@ st.markdown("""
         margin-top: 1rem !important;
     }
     
-    .stDownloadButton button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4) !important;
-    }
-    
     .stButton button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         border: none !important;
         border-radius: 12px !important;
         color: white !important;
         font-weight: 600 !important;
-        padding: 0.75rem 1.5rem !important;
+        padding: 0.75rem 2rem !important;
+        width: 100% !important;
     }
     
-    .stSuccess {
-        background: rgba(34, 197, 94, 0.2) !important;
-        border: 1px solid rgba(34, 197, 94, 0.3) !important;
+    .stImage > div {
         border-radius: 12px !important;
-        color: #22c55e !important;
+        overflow: hidden !important;
     }
     
-    .stWarning {
-        background: rgba(251, 191, 36, 0.2) !important;
-        border: 1px solid rgba(251, 191, 36, 0.3) !important;
-        border-radius: 12px !important;
-        color: #fbbf24 !important;
-    }
-    
-    .stError {
-        background: rgba(239, 68, 68, 0.2) !important;
-        border: 1px solid rgba(239, 68, 68, 0.3) !important;
-        border-radius: 12px !important;
-        color: #ef4444 !important;
-    }
-    
-    .stSpinner {
-        color: #667eea !important;
+    @media (max-width: 768px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+        }
+        
+        .stats-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
     
     /* Hide Streamlit branding */
@@ -220,13 +209,6 @@ def extract_text_from_image(image):
         st.error(f"Error during text extraction: {str(e)}")
         return "", []
 
-def get_image_download_link(image, filename="processed_image.png"):
-    """Generate a download link for the processed image"""
-    buffered = io.BytesIO()
-    image.save(buffered, format="PNG")
-    img_str = base64.b64encode(buffered.getvalue()).decode()
-    return f'<a href="data:image/png;base64,{img_str}" download="{filename}">Download Processed Image</a>'
-
 def main():
     # Main container
     st.markdown('<div class="main-container">', unsafe_allow_html=True)
@@ -240,28 +222,18 @@ def main():
     ''', unsafe_allow_html=True)
     
     # File upload section
-    st.markdown('<div class="upload-area">', unsafe_allow_html=True)
-    st.markdown('<div class="upload-text">📤 Upload your image</div>', unsafe_allow_html=True)
-    st.markdown('<div class="upload-subtext">Supports PNG, JPG, JPEG, and WEBP formats</div>', unsafe_allow_html=True)
-    
+    st.markdown('<div class="upload-section">', unsafe_allow_html=True)
+    st.markdown("📤 **Upload your image**")
     uploaded_file = st.file_uploader(
-        "",
-        type=['png', 'jpg', 'jpeg', 'webp'],
-        label_visibility="collapsed"
+        "Choose an image file",
+        type=['png', 'jpg', 'jpeg', 'webp']
     )
     st.markdown('</div>', unsafe_allow_html=True)
     
     if uploaded_file is not None:
         try:
-            # Load and display the image
+            # Load the image
             image = Image.open(uploaded_file)
-            
-            # Display the uploaded image
-            st.image(
-                image,
-                caption="📷 Uploaded Image",
-                use_column_width=True
-            )
             
             # Extract text button
             if st.button("🔍 Extract Text", key="extract_btn"):
@@ -272,21 +244,41 @@ def main():
                 st.session_state.extracted_text = extracted_text
                 st.session_state.ocr_results = ocr_results
                 st.session_state.image_processed = True
+                st.session_state.uploaded_image = image
             
-            # Display results if available
+            # Display results in side-by-side layout if available
             if hasattr(st.session_state, 'image_processed') and st.session_state.image_processed:
-                st.markdown('<div class="result-section">', unsafe_allow_html=True)
-                
                 if st.session_state.extracted_text.strip():
                     st.success("✅ Text extracted successfully!")
                     
-                    # Text area with extracted text
-                    st.text_area(
-                        "📝 Extracted Text",
-                        value=st.session_state.extracted_text,
-                        height=300,
-                        help="You can edit the extracted text here"
-                    )
+                    # Side-by-side content
+                    st.markdown('<div class="content-grid">', unsafe_allow_html=True)
+                    
+                    # Left column - Image
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.markdown('<div class="image-section">', unsafe_allow_html=True)
+                        st.markdown('<div class="section-title">📷 Uploaded Image</div>', unsafe_allow_html=True)
+                        st.image(
+                            st.session_state.uploaded_image,
+                            use_column_width=True
+                        )
+                        st.markdown('</div>', unsafe_allow_html=True)
+                    
+                    # Right column - Text
+                    with col2:
+                        st.markdown('<div class="text-section">', unsafe_allow_html=True)
+                        st.markdown('<div class="section-title">📝 Extracted Text</div>', unsafe_allow_html=True)
+                        st.text_area(
+                            "",
+                            value=st.session_state.extracted_text,
+                            height=350,
+                            label_visibility="collapsed"
+                        )
+                        st.markdown('</div>', unsafe_allow_html=True)
+                    
+                    st.markdown('</div>', unsafe_allow_html=True)
                     
                     # Download button
                     st.download_button(
@@ -327,6 +319,23 @@ def main():
                     
                 else:
                     st.warning("⚠️ No text detected in the image. Please try with a clearer image containing text.")
+            
+            else:
+                # Show image preview before processing
+                st.markdown('<div class="content-grid">', unsafe_allow_html=True)
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.markdown('<div class="image-section">', unsafe_allow_html=True)
+                    st.markdown('<div class="section-title">📷 Image Preview</div>', unsafe_allow_html=True)
+                    st.image(image, use_column_width=True)
+                    st.markdown('</div>', unsafe_allow_html=True)
+                
+                with col2:
+                    st.markdown('<div class="text-section">', unsafe_allow_html=True)
+                    st.markdown('<div class="section-title">📝 Extracted Text</div>', unsafe_allow_html=True)
+                    st.info("Click 'Extract Text' to analyze the image")
+                    st.markdown('</div>', unsafe_allow_html=True)
                 
                 st.markdown('</div>', unsafe_allow_html=True)
                 
@@ -340,6 +349,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
